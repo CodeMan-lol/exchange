@@ -23,10 +23,12 @@ class exchange : public contract {
     void ask(account_name maker, asset quantity, uint64_t price);
 
     //token contract is not eosio.token it is the op
-    account_name settlement_token_contract = N(eosio.token);
+//    account_name settlement_token_contract = N(eosio.token);
+    account_name settlement_token_contract = N(onedexchange);
     symbol_type settlement_token_symbol = S(4, EOS);
 
-    account_name exchange_token_contract = N(eosio.token);
+    account_name exchange_token_contract = N(onedechange);
+//    account_name exchange_token_contract = N(eosio.token);
     symbol_type exchange_token_symbol = S(3, SYS);
 
   private:
@@ -54,3 +56,4 @@ class exchange : public contract {
     asset to_settlement_token(asset quantity, uint64_t price, bool floor);
     asset asset_min(asset a, asset b);
 };
+
