@@ -8,7 +8,7 @@
 
 using namespace eosio;
 
-void exchange::add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price) {
+void exchange::add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price, account_name contract) {
     order_index orders(_self, scope);
     print("add order, maker: ", name{maker}, " quantity: ", quantity, " price: ", asset(price, settlement_token_symbol),
           "\n");
@@ -18,8 +18,18 @@ void exchange::add_order(uint64_t scope, account_name maker, asset quantity, uin
             r.price = price;
             r.quantity = quantity;
             r.maker = maker;
+            r.contract = contract;
         });
     }
+}
+
+void exchange::cancel_order(uint64_t scope, uint64_t order_id) {
+    order_index orders(_self, scope);
+
+    const auto& order = orders.get( order_id, "no order object found" );
+    withdraw(order.contract, order.maker, order.quantity);
+    orders.erase( order );
+
 }
 
 void exchange::deposit(account_name contract, account_name user, asset quantity) {
@@ -82,7 +92,7 @@ asset exchange::asset_min(asset a, asset b) {
 }
 
 //sell
-void exchange::ask(account_name maker, asset quantity, uint64_t price) {
+void exchange::ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract) {
     //充值其他代币，卖
     //deposit(exchange_token_contract, maker, quantity);
 
@@ -108,7 +118,7 @@ void exchange::ask(account_name maker, asset quantity, uint64_t price) {
 
         maker_receive += settlement_token_quantity;
         //withdraw(exchange_token_contract, bid_it->maker, exchange_quantity);
-        transfer(exchange_token_contract, maker, bid_it->maker, exchange_quantity);
+        transfer(ask_contract, maker, bid_it->maker, exchange_quantity);
 
         left -= exchange_quantity;
 
@@ -120,18 +130,17 @@ void exchange::ask(account_name maker, asset quantity, uint64_t price) {
             });
         }
     }
-    deposit(exchange_token_contract, maker, left);
-    add_order(N(ask), maker, left, price);
+    deposit(ask_contract, maker, left);
+    add_order(N(ask), maker, left, price, ask_contract);
 
+    //just support xx/EOS trade now, maybe improve it to xx/xx
     withdraw(settlement_token_contract, maker, maker_receive);
 }
 
 //buy
-void exchange::bid(account_name maker, asset quantity, uint64_t price) {
-    //充值eos
-    //deposit(settlement_token_contract, maker, to_settlement_token(quantity, price, false));
+void exchange::bid(account_name maker, asset quantity, uint64_t price, symbol_type bid_currency, account_name bid_contract) {
 
-    //查找对手
+    //查找卖单
     order_index ask_orders(_self, N(ask));
     //查找所有卖价低于price的卖方按照价格时间排序
     auto ask_orders_by_price = ask_orders.get_index<N(byprice)>();
@@ -139,7 +148,7 @@ void exchange::bid(account_name maker, asset quantity, uint64_t price) {
     auto ask_end = ask_orders_by_price.upper_bound(price);
 
     auto left = quantity;
-    asset maker_receive(0, exchange_token_symbol);
+    asset maker_receive(0, bid_currency);
 
     while (left.amount > 0 && ask_it != ask_end) {
         print("ask order id: ", ask_it->id, " price: ", ask_it->price, "\n");
@@ -164,9 +173,9 @@ void exchange::bid(account_name maker, asset quantity, uint64_t price) {
         }
     }
     deposit(settlement_token_contract, maker, to_settlement_token(left, price, false));
-    add_order(N(bid), maker, left, price);
+    add_order(N(bid), maker, left, price, settlement_token_contract);
 
-    withdraw(exchange_token_contract, maker, maker_receive);
+    withdraw(bid_contract, maker, maker_receive);
 }
 
-EOSIO_ABI(exchange, (bid)(ask))
+EOSIO_ABI(exchange, (bid)(ask)(cancel_order))

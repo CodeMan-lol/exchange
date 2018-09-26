@@ -16,22 +16,31 @@
           "type": "asset"
         },{
           "name": "maker",
-          "type": "name"
-        }
+          "type": "account_name"
+        },{
+           "name": "contract",
+           "type": "account_name"
+         }
       ]
     },{
       "name": "bid",
       "base": "",
       "fields": [{
           "name": "maker",
-          "type": "name"
+          "type": "account_name"
         },{
           "name": "quantity",
           "type": "asset"
         },{
           "name": "price",
           "type": "uint64"
-        }
+        },{
+           "name": "bid_currency",
+           "type": "symbol_type"
+        },{
+           "name": "bid_contract",
+           "type": "account_name"
+         }
       ]
     },{
       "name": "ask",
@@ -45,8 +54,22 @@
         },{
           "name": "price",
           "type": "uint64"
-        }
+        },{
+           "name": "ask_contract",
+           "type": "account_name"
+         }
       ]
+    },{
+       "name": "cancel_order",
+       "base": "",
+       "fields": [{
+           "name": "scope",
+           "type": "uint64"
+         },{
+           "name": "order_id",
+           "type": "uint64"
+         }
+       ]
     }
   ],
   "actions": [{
@@ -57,7 +80,11 @@
       "name": "ask",
       "type": "ask",
       "ricardian_contract": ""
-    }
+    },{
+       "name": "cancel_order",
+       "type": "cancel_order",
+       "ricardian_contract": ""
+     }
   ],
   "tables": [{
       "name": "orders",

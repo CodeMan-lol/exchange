@@ -17,19 +17,16 @@ class exchange : public contract {
     using contract::contract;
 
     //@abi action
-    void bid(account_name maker, asset quantity, uint64_t price);
+    void bid(account_name maker, asset quantity, uint64_t price, symbol_type bid_currency, account_name bid_contract);
 
     //@abi action
-    void ask(account_name maker, asset quantity, uint64_t price);
+    void ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract);
 
-    //token contract is not eosio.token it is the op
-//    account_name settlement_token_contract = N(eosio.token);
-    account_name settlement_token_contract = N(onedexchange);
+    //@abi action
+    void cancel_order(uint64_t scope, uint64_t order_id);
+
+    account_name settlement_token_contract = N(eosio.token);
     symbol_type settlement_token_symbol = S(4, EOS);
-
-    account_name exchange_token_contract = N(onedechange);
-//    account_name exchange_token_contract = N(eosio.token);
-    symbol_type exchange_token_symbol = S(3, SYS);
 
   private:
     //@abi table
@@ -38,16 +35,17 @@ class exchange : public contract {
       uint64_t price;
       asset quantity;
       account_name maker;
+      account_name contract;
       uint64_t primary_key() const { return id; }
       uint64_t get_price() const { return price; }
-      EOSLIB_SERIALIZE(orders, (id)(price)(quantity)(maker))
+      EOSLIB_SERIALIZE(orders, (id)(price)(quantity)(maker)(contract))
     };
 
     typedef multi_index<N(orders), orders,
             indexed_by<N(byprice), const_mem_fun<orders, uint64_t, &orders::get_price> >
               > order_index;
 
-    void add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price);
+    void add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price, account_name contract);
 
     void deposit(account_name contract, account_name user, asset quantity);
     void withdraw(account_name contract, account_name user, asset quantity);
