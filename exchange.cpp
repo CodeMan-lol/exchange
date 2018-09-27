@@ -56,11 +56,11 @@ void exchange::transfer(account_name contract, account_name from, account_name t
 
 void exchange::withdraw(account_name contract, account_name user, asset quantity) {
     print(name{user}, " withdraw ", quantity, "\n");
-    if (quantity.amount == 0) {
+    if (quantity.amount <= 0) {
         print("amoutn equals to 0 abord\n");
         return;
     }
-    eosio_assert( quantity.amount > 0, "insufficient bid" );
+//    eosio_assert( quantity.amount > 0, "insufficient bid" );
     action(
             permission_level{_self, N(active)},
             contract, N(transfer),
@@ -108,7 +108,7 @@ void exchange::ask(account_name maker, asset quantity, uint64_t price, account_n
     auto left = quantity;
     asset maker_receive(0, settlement_token_symbol);
 
-    require_auth(maker);
+//    require_auth(maker);
     require_recipient(maker);
 
     while (left.amount > 0 && bid_it != bid_end) {
@@ -153,7 +153,7 @@ void exchange::bid(account_name maker, asset quantity, uint64_t price, symbol_ty
     auto left = quantity;
     asset maker_receive(0, bid_currency);
 
-    require_auth(maker);
+//    require_auth(maker);
     require_recipient(maker);
 
     while (left.amount > 0 && ask_it != ask_end) {

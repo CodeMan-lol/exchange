@@ -20,10 +20,10 @@
           "type": "asset"
         },{
           "name": "maker",
-          "type": "account_name"
+          "type": "name"
         },{
           "name": "contract",
-          "type": "account_name"
+          "type": "name"
         }
       ]
     },{
@@ -39,7 +39,7 @@
       "base": "",
       "fields": [{
           "name": "maker",
-          "type": "account_name"
+          "type": "name"
         },{
           "name": "quantity",
           "type": "asset"
@@ -51,7 +51,7 @@
           "type": "symbol_type"
         },{
           "name": "bid_contract",
-          "type": "account_name"
+          "type": "name"
         }
       ]
     },{
@@ -59,7 +59,7 @@
       "base": "",
       "fields": [{
           "name": "maker",
-          "type": "account_name"
+          "type": "name"
         },{
           "name": "quantity",
           "type": "asset"
@@ -68,7 +68,7 @@
           "type": "uint64"
         },{
           "name": "ask_contract",
-          "type": "account_name"
+          "type": "name"
         }
       ]
     },{
