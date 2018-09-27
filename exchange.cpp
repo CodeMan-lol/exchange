@@ -60,6 +60,7 @@ void exchange::withdraw(account_name contract, account_name user, asset quantity
         print("amoutn equals to 0 abord\n");
         return;
     }
+    eosio_assert( quantity.amount > 0, "insufficient bid" );
     action(
             permission_level{_self, N(active)},
             contract, N(transfer),
@@ -68,6 +69,7 @@ void exchange::withdraw(account_name contract, account_name user, asset quantity
 }
 
 asset exchange::to_settlement_token(asset quantity, uint64_t price, bool floor) {
+    eosio_assert(quantity.amount >=0 , "insufficient amount");
     //this is a simple logic, need to add more rules
     uint64_t amt = quantity.amount * price;
 
@@ -100,13 +102,14 @@ void exchange::ask(account_name maker, asset quantity, uint64_t price, account_n
     order_index bid_orders(_self, N(bid));
     //查找所有买价高于price的买方按照价格时间排序
     auto bid_orders_by_price = bid_orders.get_index<N(byprice)>();
-    //买单不存在的表示
     auto bid_it = bid_orders_by_price.end();
-    //获取符合条件的买单的迭代器
     auto bid_end = bid_orders_by_price.lower_bound(price);
 
     auto left = quantity;
     asset maker_receive(0, settlement_token_symbol);
+
+    require_auth(maker);
+    require_recipient(maker);
 
     while (left.amount > 0 && bid_it != bid_end) {
         bid_it--;
@@ -149,6 +152,9 @@ void exchange::bid(account_name maker, asset quantity, uint64_t price, symbol_ty
 
     auto left = quantity;
     asset maker_receive(0, bid_currency);
+
+    require_auth(maker);
+    require_recipient(maker);
 
     while (left.amount > 0 && ask_it != ask_end) {
         print("ask order id: ", ask_it->id, " price: ", ask_it->price, "\n");
