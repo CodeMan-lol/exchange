@@ -23,7 +23,7 @@ class exchange : public contract {
     void ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract);
 
     //@abi action
-    void cancel_order(uint64_t scope, uint64_t order_id);
+    void cancelorder(uint64_t scope, uint64_t order_id);
 
     account_name settlement_token_contract = N(eosio.token);
     symbol_type settlement_token_symbol = S(4, EOS);

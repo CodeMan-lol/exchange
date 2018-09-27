@@ -60,7 +60,7 @@
          }
       ]
     },{
-       "name": "cancel_order",
+       "name": "cancelorder",
        "base": "",
        "fields": [{
            "name": "scope",
@@ -81,8 +81,8 @@
       "type": "ask",
       "ricardian_contract": ""
     },{
-       "name": "cancel_order",
-       "type": "cancel_order",
+       "name": "cancelorder",
+       "type": "cancelorder",
        "ricardian_contract": ""
      }
   ],

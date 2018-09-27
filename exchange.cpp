@@ -23,7 +23,7 @@ void exchange::add_order(uint64_t scope, account_name maker, asset quantity, uin
     }
 }
 
-void exchange::cancel_order(uint64_t scope, uint64_t order_id) {
+void exchange::cancelorder(uint64_t scope, uint64_t order_id) {
     order_index orders(_self, scope);
 
     const auto& order = orders.get( order_id, "no order object found" );
@@ -178,4 +178,4 @@ void exchange::bid(account_name maker, asset quantity, uint64_t price, symbol_ty
     withdraw(bid_contract, maker, maker_receive);
 }
 
-EOSIO_ABI(exchange, (bid)(ask)(cancel_order))
+EOSIO_ABI(exchange, (bid)(ask)(cancelorder))
