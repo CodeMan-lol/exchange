@@ -17,13 +17,13 @@ class exchange : public contract {
     using contract::contract;
 
     //@abi action
-    void bid(account_name maker, asset quantity, uint64_t price, symbol_type bid_currency, account_name bid_contract);
+    void bid(account_name maker, asset quantity, uint64_t price, asset bid_currency, account_name bid_contract);
 
     //@abi action
     void ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract);
 
     //@abi action
-    void cancelorder(uint64_t scope, uint64_t order_id);
+    void cancelorder(account_name scope, uint64_t order_id);
 
     account_name settlement_token_contract = N(eosio.token);
     symbol_type settlement_token_symbol = S(4, EOS);

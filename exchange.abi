@@ -48,7 +48,7 @@
           "type": "uint64"
         },{
           "name": "bid_currency",
-          "type": "symbol_type"
+          "type": "asset"
         },{
           "name": "bid_contract",
           "type": "name"
@@ -76,7 +76,7 @@
       "base": "",
       "fields": [{
           "name": "scope",
-          "type": "uint64"
+          "type": "name"
         },{
           "name": "order_id",
           "type": "uint64"
