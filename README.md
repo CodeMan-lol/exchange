@@ -1,3 +1,3 @@
 <p align="center">
-  <img width="300" height="200" src="./dex.jpeg">
+  <img width="300" height="200" src="./dex.png">
 </p>
