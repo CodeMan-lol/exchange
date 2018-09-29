@@ -28,6 +28,8 @@ void exchange::cancelorder(account_name scope, uint64_t order_id) {
     order_index orders(_self, scope);
 
     const auto& order = orders.get( order_id, "no order object found" );
+    require_auth(order.maker);
+
     withdraw(order.contract, order.maker, order.quantity);
     orders.erase( order );
 
