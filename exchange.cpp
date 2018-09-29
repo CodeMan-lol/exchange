@@ -167,7 +167,6 @@ void exchange::bid(account_name maker, asset quantity, uint64_t price, asset bid
         auto settlement_token_quantity = to_settlement_token(exchange_quantity, ask_it->price, false);
 
         maker_receive += exchange_quantity;
-        withdraw(settlement_token_contract, ask_it->maker, settlement_token_quantity);
         transfer(settlement_token_contract, maker, ask_it->maker, settlement_token_quantity);
 
         left -= exchange_quantity;
