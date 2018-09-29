@@ -9,7 +9,7 @@
 
 using namespace eosio;
 
-void exchange::add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price, account_name contract) {
+void exchange::add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price, account_name contract, account_name source) {
     order_index orders(_self, scope);
     print("add order, maker: ", name{maker}, " quantity: ", quantity, " price: ", asset(price, settlement_token_symbol),
           "\n");
@@ -20,6 +20,7 @@ void exchange::add_order(uint64_t scope, account_name maker, asset quantity, uin
             r.quantity = quantity;
             r.maker = maker;
             r.contract = contract;
+            r.source = source;
         });
     }
 }
@@ -99,7 +100,7 @@ asset exchange::asset_min(asset a, asset b) {
 }
 
 //sell
-void exchange::ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract) {
+void exchange::ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract, account_name source) {
     //充值其他代币，卖
     //deposit(exchange_token_contract, maker, quantity);
 
@@ -139,14 +140,14 @@ void exchange::ask(account_name maker, asset quantity, uint64_t price, account_n
         }
     }
     deposit(ask_contract, maker, left);
-    add_order(N(ask), maker, left, price, ask_contract);
+    add_order(N(ask), maker, left, price, ask_contract, source);
 
     //just support xx/EOS trade now, maybe improve it to xx/xx
     withdraw(settlement_token_contract, maker, maker_receive);
 }
 
 //buy
-void exchange::bid(account_name maker, asset quantity, uint64_t price, asset bid_currency, account_name bid_contract) {
+void exchange::bid(account_name maker, asset quantity, uint64_t price, asset bid_currency, account_name bid_contract, account_name source) {
 
     //查找卖单
     order_index ask_orders(_self, N(ask));
@@ -187,7 +188,7 @@ void exchange::bid(account_name maker, asset quantity, uint64_t price, asset bid
 
 
     deposit(settlement_token_contract, maker, to_settlement_token(left, price, false));
-    add_order(N(bid), maker, left, price, settlement_token_contract);
+    add_order(N(bid), maker, left, price, settlement_token_contract, source);
 
     withdraw(bid_contract, maker, maker_receive);
 }

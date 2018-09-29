@@ -17,10 +17,10 @@ class exchange : public contract {
     using contract::contract;
 
     //@abi action
-    void bid(account_name maker, asset quantity, uint64_t price, asset bid_currency, account_name bid_contract);
+    void bid(account_name maker, asset quantity, uint64_t price, asset bid_currency, account_name bid_contract, account_name source);
 
     //@abi action
-    void ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract);
+    void ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract, account_name source);
 
     //@abi action
     void cancelorder(account_name scope, uint64_t order_id);
@@ -36,16 +36,17 @@ class exchange : public contract {
       asset quantity;
       account_name maker;
       account_name contract;
+      account_name source;
       uint64_t primary_key() const { return id; }
       uint64_t get_price() const { return price; }
-      EOSLIB_SERIALIZE(orders, (id)(price)(quantity)(maker)(contract))
+      EOSLIB_SERIALIZE(orders, (id)(price)(quantity)(maker)(contract)(source))
     };
 
     typedef multi_index<N(orders), orders,
             indexed_by<N(byprice), const_mem_fun<orders, uint64_t, &orders::get_price> >
               > order_index;
 
-    void add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price, account_name contract);
+    void add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price, account_name contract,account_name source);
 
     void deposit(account_name contract, account_name user, asset quantity);
     void withdraw(account_name contract, account_name user, asset quantity);

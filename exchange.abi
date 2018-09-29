@@ -24,7 +24,10 @@
         },{
           "name": "contract",
           "type": "name"
-        }
+        },{
+           "name": "source",
+           "type": "name"
+         }
       ]
     },{
       "name": "symbol_type",
@@ -52,7 +55,10 @@
         },{
           "name": "bid_contract",
           "type": "name"
-        }
+        },{
+           "name": "source",
+           "type": "name"
+         }
       ]
     },{
       "name": "ask",
@@ -69,7 +75,10 @@
         },{
           "name": "ask_contract",
           "type": "name"
-        }
+        },{
+            "name": "source",
+            "type": "name"
+          }
       ]
     },{
       "name": "cancelorder",
