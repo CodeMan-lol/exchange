@@ -142,3 +142,13 @@ cleos --wallet-url http://127.0.0.1:6666 --url http://xx.xx.xx.xx:8888 get table
 cleos --wallet-url http://127.0.0.1:6666 --url http://xx.xx.xx.xx:8888 get table hello11zhang bid orders
 ```
 
+## 贡献方式 （之后会移到wiki中）
+1. 帮忙翻译文档
+2. 贡献代码
+3. 提交bug修复
+
+任何好的想法都欢迎，坐等来撩！
+
+最近不知道怎么了，有的时候有通知，邮件会漏掉，如果回复不及时，加我微信也行（17611133971）  不过最好还是走github，这样可溯源，还可能对其他人有帮助。
+
+## 感谢
