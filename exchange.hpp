@@ -10,7 +10,10 @@
 #include <eosiolib/asset.hpp>
 #include <eosiolib/currency.hpp>
 
+
 using namespace eosio;
+
+#define SN(X) (string_to_symbol(0, #X) >> 8)
 
 class exchange : public contract {
   public:
@@ -45,11 +48,29 @@ class exchange : public contract {
             indexed_by<N(byprice), const_mem_fun<orders, uint64_t, &orders::get_price> >
               > order_index;
 
+    struct account {
+        asset    balance;
+        uint64_t primary_key()const { return balance.symbol.name(); }
+    };
+    typedef multi_index<N(accounts), account> accounts;
+
+    asset get_balance(account_name owner, account_name contract = N(eosio.token), symbol_name sym = SN(EOS)) const
+    {
+        accounts accountstable(contract, owner);
+        auto ac = accountstable.find(sym);
+        if (ac == accountstable.end()) {
+            return asset();
+        }
+        return ac->balance;
+    }
+
     void add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price, account_name contract);
 
     void deposit(account_name contract, account_name user, asset quantity);
     void withdraw(account_name contract, account_name user, asset quantity);
     void transfer(account_name contract, account_name from, account_name to, asset quantity);
+    void validate_bid_balance(account_name maker, asset quantity, uint64_t price);
+    void validate_ask_balance(account_name maker, asset quantity, account_name contract);
 
     asset to_settlement_token(asset quantity, uint64_t price, bool floor);
     asset asset_min(asset a, asset b);
