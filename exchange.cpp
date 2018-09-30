@@ -6,8 +6,11 @@
 
 #include "exchange.hpp"
 #include <eosiolib/currency.hpp>
+#include <eosio.system/eosio.system.hpp>
+#include <eosio.token/eosio.token.hpp>
 
 using namespace eosio;
+using namespace eosiosystem;
 
 void exchange::add_order(uint64_t scope, account_name maker, asset quantity, uint64_t price, account_name contract, account_name source) {
     order_index orders(_self, scope);
@@ -99,10 +102,34 @@ asset exchange::asset_min(asset a, asset b) {
     else return a;
 }
 
+//get account EOS balance
+asset get_eos_balance(account_name owner)
+{
+    auto symbol = symbol_type(system_token_symbol);
+    eosio::token t(N(eosio.token));
+    return t.get_balance(owner, symbol.name());
+}
+
+
+
+//validate user bid balance (EOS)
+void exchange::validate_bid_balance(account_name maker, asset quantity, uint64_t price)
+{
+    auto settlement_token_quantity = to_settlement_token(quantity, price, false);
+    auto maker_balance = get_eos_balance(maker);
+    eosio_assert(maker_balance >= settlement_token_quantity, "maker balance not enough");
+}
+
+//validate user ask balance (other tokens)
+void exchange::validate_ask_balance(account_name maker, asset quantity, account_name contract){
+    auto maker_balance = get_balance(maker,contract,quantity.symbol.name());
+    eosio_assert(maker_balance >= quantity, "maker other tokens not enough");
+}
+
 //sell
 void exchange::ask(account_name maker, asset quantity, uint64_t price, account_name ask_contract, account_name source) {
-    //充值其他代币，卖
-    //deposit(exchange_token_contract, maker, quantity);
+    //验证maker是否有足够的代币
+    validate_ask_balance(maker,quantity,ask_contract);
 
     //查找所有的买单
     order_index bid_orders(_self, N(bid));
@@ -114,7 +141,7 @@ void exchange::ask(account_name maker, asset quantity, uint64_t price, account_n
     auto left = quantity;
     asset maker_receive(0, settlement_token_symbol);
 
-//    require_auth(maker);
+    require_auth(maker);
 //    require_recipient(maker);
 
     while (left.amount > 0 && bid_it != bid_end) {
@@ -149,6 +176,9 @@ void exchange::ask(account_name maker, asset quantity, uint64_t price, account_n
 //buy
 void exchange::bid(account_name maker, asset quantity, uint64_t price, asset bid_currency, account_name bid_contract, account_name source) {
 
+    // 验证maker是否有足够多的EOS去购买代币
+    validate_bid_balance(maker, quantity, price);
+
     //查找卖单
     order_index ask_orders(_self, N(ask));
     //查找所有卖价低于price的卖方按照价格时间排序
@@ -159,7 +189,7 @@ void exchange::bid(account_name maker, asset quantity, uint64_t price, asset bid
     auto left = quantity;
     asset maker_receive(0, bid_currency.symbol);
 
-//    require_auth(maker);
+    require_auth(maker);
 //    require_recipient(maker);
 
     while (left.amount > 0 && ask_it != ask_end) {
