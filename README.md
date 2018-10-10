@@ -7,6 +7,8 @@
 	<h2>EOS Decentralized Exchanges</h2>
 </div>
 
+<b>有bug，先不要使用！！</b>
+
 ## 实现效果
 目前可以实现EOS链上所有的EOS包括代币的交易买卖
 
